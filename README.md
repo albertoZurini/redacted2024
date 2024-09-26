@@ -1,5 +1,5 @@
 # NFC Demo Application
-
+[Tải ứng dụng](https://github.com/nguyencongtu2004/NFC-Demo/releases/download/v1.0/NFC-Demo.apk)
 ## Mô tả
 
 Đây là một ứng dụng Android mẫu, thực hiện tính năng đọc và ghi dữ liệu từ/đến thẻ NFC. Ứng dụng này được xây dựng bằng `Jetpack Compose` và sử dụng `NfcAdapter` để tương tác với các thẻ NFC. Bạn có thể chuyển đổi giữa chế độ đọc và chế độ ghi dữ liệu từ các thẻ NFC.
