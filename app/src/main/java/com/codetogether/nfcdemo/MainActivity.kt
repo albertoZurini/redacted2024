@@ -9,6 +9,7 @@ import android.nfc.Tag
 import android.nfc.tech.Ndef
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.qifan.readnfcmessage.parser.NdefMessageParser
 import java.io.IOException
 
 class MainActivity : ComponentActivity() {
@@ -47,15 +49,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Surface(modifier = Modifier.fillMaxSize()) {
-                NFCReaderWriter(
-                    message = nfcMessage,
-                    onStartWrite = { data ->
-                        dataToWrite = data // Cập nhật dữ liệu cần ghi
-                        writeMode = true   // Chuyển sang chế độ ghi
-                        nfcMessage = "Đưa thẻ NFC vào vùng đọc để ghi..."  // Cập nhật giao diện
-                    },
-                    writeMode = writeMode,
-                )
+                Text("Hello")
             }
         }
     }
@@ -83,7 +77,7 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
-        val tag: Tag? = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
+        /*val tag: Tag? = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
         tag?.let {
             currentTag = it  // Lưu thẻ hiện tại
             if (writeMode) {
@@ -96,8 +90,28 @@ class MainActivity : ComponentActivity() {
                 val nfcContent = readNfcTag(it) ?: "Không thể đọc dữ liệu từ thẻ"
                 nfcMessage = nfcContent  // Cập nhật thông điệp trên giao diện
             }
+        }*/if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
+            intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)?.also { rawMessages ->
+                val messages: List<NdefMessage> = rawMessages.map { it as NdefMessage }
+                // Process the messages array.
+                parserNDEFMessage(messages)
+            }
         }
     }
+
+    private fun parserNDEFMessage(messages: List<NdefMessage>) {
+        val builder = StringBuilder()
+        val records = NdefMessageParser.parse(messages[0])
+        val size = records.size
+
+        for (i in 0 until size) {
+            val record = records[i]
+            val str = record.str()
+            builder.append(str).append("\n")
+        }
+        println(builder.toString())
+    }
+
 }
 
 // Đọc dữ liệu từ thẻ NFC
