@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
             // Thiết bị không hỗ trợ NFC
             setContent {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    Text(text = "Thiết bị không hỗ trợ NFC")
+                    Text(text = "Can't get NFCAdapter")
                 }
             }
         }

@@ -2,24 +2,32 @@ package com.example.hce_app
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Bundle
+import android.text.TextUtils
+import android.view.View
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.hce_app.cardEmulation.KHostApduService
 import com.example.hce_app.ui.theme.NFCDemoTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +37,9 @@ class MainActivity : ComponentActivity() {
     private var writeMode: Boolean by mutableStateOf(false)  // Trạng thái ghi dữ liệu
     private var dataToWrite: String by mutableStateOf("")    // Dữ liệu cần ghi
 
-    private var nfcMessage: String by mutableStateOf("Đưa thẻ NFC vào vùng đọc")  // Trạng thái hiển thị thông điệp
+    private var nfcMessage: String by mutableStateOf("Hello")  // Trạng thái hiển thị thông điệp
+
+    private var messageToCast: String by mutableStateOf("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,19 +48,58 @@ class MainActivity : ComponentActivity() {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
         // Kiểm tra xem NFC có được hỗ trợ hay không
-        if (nfcAdapter == null) {
+        if (nfcAdapter == null || !supportNfcHceFeature()) {
             // Thiết bị không hỗ trợ NFC
             setContent {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    Text(text = "Thiết bị không hỗ trợ NFC")
+                    Text(text = "Can't get NFCAdapter")
                 }
             }
         }
 
         setContent {
             Surface(modifier = Modifier.fillMaxSize()) {
-                Text("Hello")
+                Column {
+                    Text(nfcMessage)
+                    TextField(
+                        value = messageToCast,
+                        onValueChange = { messageToCast = it },
+                        label = { Text("Label") }
+                    )
+                    Button(
+                        onClick={
+                            setNFCMessage()
+                        }
+                    ) {
+                        Text("Set the message")
+                    }
+                }
             }
+        }
+    }
+
+    private fun supportNfcHceFeature() =
+        checkNFCEnable() && packageManager.hasSystemFeature(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION)
+
+    private fun checkNFCEnable(): Boolean {
+        return if (nfcAdapter == null) {
+            false
+        } else {
+            nfcAdapter?.isEnabled == true
+        }
+    }
+
+    private fun setNFCMessage() {
+        if (TextUtils.isEmpty(messageToCast)) {
+            Toast.makeText(
+                this,
+                "The message has not to be empty",
+                Toast.LENGTH_LONG,
+            ).show()
+        } else {
+            val intent = Intent(this, KHostApduService::class.java)
+            intent.putExtra("ndefMessage", messageToCast)
+            startService(intent)
         }
     }
 
