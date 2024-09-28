@@ -1,55 +1,23 @@
 # NFC Demo Application
-[Tải ứng dụng](https://github.com/nguyencongtu2004/NFC-Demo/releases/download/v1.0/NFC-Demo.apk)
-## Mô tả
 
-Đây là một ứng dụng Android mẫu, thực hiện tính năng đọc và ghi dữ liệu từ/đến thẻ NFC. Ứng dụng này được xây dựng bằng `Jetpack Compose` và sử dụng `NfcAdapter` để tương tác với các thẻ NFC. Bạn có thể chuyển đổi giữa chế độ đọc và chế độ ghi dữ liệu từ các thẻ NFC.
+This app is a working version of [https://github.com/underwindfall/NFCAndroid](https://github.com/underwindfall/NFCAndroid), as I was unable to run it. I encountered the issue described here: [https://github.com/underwindfall/NFCAndroid/issues/11](https://github.com/underwindfall/NFCAndroid/issues/11).
 
-## Các tính năng chính
+After some research and a bit of headache, I managed to get this app working. I still need to read all the NFC documentation to determine if my code follows ISO14443 or if I'm doing something wrong, but the PoC I was able to test works.
 
-### 1. Đọc dữ liệu từ thẻ NFC
-Ứng dụng có thể phát hiện các thẻ NFC và đọc nội dung của các bản ghi NDEF (NFC Data Exchange Format). Khi một thẻ NFC được đưa vào phạm vi đọc, ứng dụng sẽ trích xuất dữ liệu từ thẻ và hiển thị cho người dùng.
+# How does this work
 
-- **Hành vi**: Khi không ở chế độ ghi, ứng dụng sẽ tự động đọc thẻ NFC khi thẻ được phát hiện.
-- **Dữ liệu đọc được**: Ứng dụng sẽ lấy nội dung từ bản ghi NDEF đầu tiên trong thẻ và hiển thị lên giao diện người dùng.
+Basically, [here](https://developer.android.com/develop/connectivity/nfc/hce) it states that you need to define an AID to enable an HCE-enabled app to emulate a tag that a reader app has to read. The problem is that normal readers (such as the Flipper Zero or NFC Tools) will not work with HCE because you first need to send this custom AID. I tested it with `scriptor` by doing the following:
 
-### 2. Ghi dữ liệu vào thẻ NFC
-Ứng dụng cho phép người dùng nhập dữ liệu văn bản và ghi dữ liệu này vào thẻ NFC khi ở chế độ ghi. Khi người dùng chọn chế độ ghi, nhập nội dung cần ghi và đưa thẻ NFC vào phạm vi đọc, dữ liệu sẽ được ghi vào thẻ.
+1. Placing the ACR122U (I believe other readers should be fine too, but I only have this one) on the Android phone.
+2. Running `scriptor`.
+3. Entering this string `00A4040007F0394148148100` (where `F0394148148100` is the custom AID for my app) [https://github.com/albertoZurini/NFC-Demo/blob/158855bf0cd72ad3adbd54e707e7c4b9215fc99c/hce_app/src/main/res/xml/apduservice.xml#L10](https://github.com/albertoZurini/NFC-Demo/blob/158855bf0cd72ad3adbd54e707e7c4b9215fc99c/hce_app/src/main/res/xml/apduservice.xml#L10).
+4. Entering `00B00000FF` to initiate the binary reading.
 
-- **Hành vi**: Khi ở chế độ ghi, người dùng nhập nội dung và đưa thẻ NFC vào vùng đọc. Nếu ghi thành công, ứng dụng sẽ thông báo cho người dùng.
-- **Dữ liệu ghi**: Ứng dụng ghi dữ liệu vào thẻ dưới dạng bản ghi NDEF với mã ngôn ngữ mặc định là `en` (tiếng Anh).
+My reader app is essentially doing the same thing here: [https://github.com/albertoZurini/NFC-Demo/blob/158855bf0cd72ad3adbd54e707e7c4b9215fc99c/reader_app/src/main/java/com/codetogether/nfcdemo/MainActivity.kt#L80-L230](https://github.com/albertoZurini/NFC-Demo/blob/158855bf0cd72ad3adbd54e707e7c4b9215fc99c/reader_app/src/main/java/com/codetogether/nfcdemo/MainActivity.kt#L80-L230).
 
-### 3. Chuyển đổi chế độ
-Người dùng có thể dễ dàng chuyển đổi giữa hai chế độ đọc và ghi bằng cách nhấn nút "Chuyển sang chế độ ghi" hoặc "Chuyển sang chế độ đọc".
+The only issue I encountered is that sending `0xFF` for the length doesn't work, so I worked around it by sending `0xFE` [https://github.com/albertoZurini/NFC-Demo/blob/158855bf0cd72ad3adbd54e707e7c4b9215fc99c/reader_app/src/main/java/com/codetogether/nfcdemo/MainActivity.kt#L98](https://github.com/albertoZurini/NFC-Demo/blob/158855bf0cd72ad3adbd54e707e7c4b9215fc99c/reader_app/src/main/java/com/codetogether/nfcdemo/MainActivity.kt#L98).
 
-- **Chế độ đọc**: Mặc định, ứng dụng sẽ đọc dữ liệu từ thẻ NFC.
-- **Chế độ ghi**: Khi chuyển sang chế độ ghi, người dùng sẽ có thể nhập nội dung và ghi vào thẻ NFC.
+# Demo
 
-## Hướng dẫn sử dụng
-
-1. **Mở ứng dụng**: Ứng dụng sẽ mặc định ở chế độ đọc.
-2. **Đọc thẻ NFC**: Đưa thẻ NFC vào phạm vi đọc của thiết bị. Nếu thẻ có chứa dữ liệu NDEF, nội dung sẽ được hiển thị.
-3. **Ghi thẻ NFC**:
-   - Nhấn vào nút "Chuyển sang chế độ ghi".
-   - Nhập nội dung bạn muốn ghi vào thẻ.
-   - Đưa thẻ NFC vào phạm vi đọc của thiết bị để ghi dữ liệu.
-4. **Chuyển đổi chế độ**: Bạn có thể nhấn vào nút chuyển đổi để chuyển giữa chế độ đọc và ghi.
-
-## Cấu trúc dự án
-
-- **MainActivity.kt**: Đây là nơi xử lý logic chính của ứng dụng, bao gồm việc tương tác với NFC và cập nhật giao diện.
-  - `onNewIntent`: Được gọi khi thiết bị phát hiện thẻ NFC.
-  - `readNfcTag`: Hàm để đọc dữ liệu từ thẻ NFC.
-  - `writeNfcTag`: Hàm để ghi dữ liệu vào thẻ NFC.
-  
-- **NFCReaderWriter.kt**: Chứa thành phần giao diện `Jetpack Compose` để hiển thị giao diện người dùng cho việc đọc và ghi NFC.
-
-## Yêu cầu
-
-- Thiết bị Android hỗ trợ NFC.
-- NFC phải được bật trong cài đặt của thiết bị.
-
-## Ghi chú
-
-- Ứng dụng chỉ hỗ trợ các thẻ NFC chứa dữ liệu theo định dạng NDEF.
-- Khi ghi dữ liệu vào thẻ, ứng dụng sẽ ghi một bản ghi NDEF với ngôn ngữ mặc định là "en" (tiếng Anh).
-- Một số thẻ NFC có thể không hỗ trợ ghi hoặc có thể bị khóa, trong trường hợp này quá trình ghi sẽ thất bại.
+On the left is the HCE device, and on the right is the reader.
+![Demo](./assets/demo.gif "Demo")
