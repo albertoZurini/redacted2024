@@ -10,6 +10,7 @@ import android.nfc.tech.IsoDep
 import android.nfc.tech.Ndef
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -94,11 +95,33 @@ class MainActivity : ComponentActivity() {
         commandApdu[1] = 0xB0.toByte()
         commandApdu[2] = 0x00.toByte()
         commandApdu[3] = 0x00.toByte()
-        commandApdu[4] = 0x10.toByte()
+        commandApdu[4] = 0xFE.toByte()
         return commandApdu
     }
 
     fun extractTextFromNDEF(rawData: ByteArray): String {
+        /* Example; TODO: figoure out how it works
+
+0 = 0x0
+1 = 0xE     record header
+2 = 0xD9    payload length
+3 = 0x1
+4 = 0x7
+5 = 0x2
+6 = 0x54
+7 = 0xE1
+8 = 0x4
+9 = 0x2
+10 = 0x65
+11 = 0x6E
+12 = 0x63
+13 = 0x69
+14 = 0x61
+15 = 0x6F
+16 = 0x90
+17 = 0x0
+
+         */
         // Check that the data is long enough to contain a meaningful NDEF record
         if (rawData.size < 3) {
             throw IllegalArgumentException("The NDEF data is too short.")
@@ -119,7 +142,7 @@ class MainActivity : ComponentActivity() {
 
         // The text starts after the language code (position 10 + language code length)
         val textStartIndex = 10 + languageCodeLength
-        val textLength = rawData.size - textStartIndex - 1 // Remove the last padding byte (0x90)
+        val textLength = rawData.size - textStartIndex - 2 // Remove the last padding byte (0x90)
 
         // Extract and return the text portion
         return rawData.copyOfRange(textStartIndex, textStartIndex + textLength).toString(Charsets.UTF_8)
@@ -146,6 +169,7 @@ class MainActivity : ComponentActivity() {
                 }
                 val output = extractTextFromNDEF(result)
                 Log.i(TAG, "Output: "+output)
+                Toast.makeText(this, output, Toast.LENGTH_SHORT).show()
             } catch ( ex: IOException) {
                 println("Exception " + ex)
             } finally {
