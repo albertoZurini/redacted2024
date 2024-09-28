@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">hce_app</string>
+    <string name="servicedesc">My HCE App</string>
+    <string name="aiddescription">aiddescription</string>
+</resources>

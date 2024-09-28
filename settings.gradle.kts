@@ -20,5 +20,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "NFC Demo"
-include(":app")
- 
+include(":reader_app")
+include(":hce_app")
