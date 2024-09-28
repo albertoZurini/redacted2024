@@ -122,7 +122,7 @@ class MainActivity : ComponentActivity() {
     private fun disableNfcForegroundDispatch() {
         nfcAdapter?.disableForegroundDispatch(this)
     }
-
+/*
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
@@ -139,5 +139,5 @@ class MainActivity : ComponentActivity() {
         val builder = StringBuilder()
         println(messages.toString())
     }
-
+*/
 }

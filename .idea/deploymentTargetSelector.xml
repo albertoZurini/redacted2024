@@ -7,7 +7,7 @@
       </SelectionState>
       <SelectionState runConfigName="reader_app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-09-27T17:42:42.472780408Z">
+        <DropdownSelection timestamp="2024-09-28T18:13:02.844499381Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=6b3213b" />
@@ -18,10 +18,10 @@
       </SelectionState>
       <SelectionState runConfigName="hce_app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-09-27T17:46:48.840442612Z">
+        <DropdownSelection timestamp="2024-09-28T18:02:50.636002323Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=6b3213b" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=6e292c83" />
             </handle>
           </Target>
         </DropdownSelection>
