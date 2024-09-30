@@ -11,10 +11,6 @@ import java.io.UnsupportedEncodingException
 import java.math.BigInteger
 import java.util.*
 
-/**
- * Created by Qifan on 05/12/2018.
- */
-
 class KHostApduService : HostApduService() {
 
     private val TAG = "HostApduService"

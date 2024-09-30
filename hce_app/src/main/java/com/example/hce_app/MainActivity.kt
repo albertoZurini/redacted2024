@@ -32,24 +32,17 @@ import com.example.hce_app.ui.theme.NFCDemoTheme
 
 class MainActivity : ComponentActivity() {
     private var nfcAdapter: NfcAdapter? = null
-    private var currentTag: Tag? = null  // Lưu thẻ hiện tại khi phát hiện
 
-    private var writeMode: Boolean by mutableStateOf(false)  // Trạng thái ghi dữ liệu
-    private var dataToWrite: String by mutableStateOf("")    // Dữ liệu cần ghi
-
-    private var nfcMessage: String by mutableStateOf("Hello")  // Trạng thái hiển thị thông điệp
+    private var nfcMessage: String by mutableStateOf("Hello")
 
     private var messageToCast: String by mutableStateOf("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Lấy NFC Adapter
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
-        // Kiểm tra xem NFC có được hỗ trợ hay không
         if (nfcAdapter == null || !supportNfcHceFeature()) {
-            // Thiết bị không hỗ trợ NFC
             setContent {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     Text(text = "Can't get NFCAdapter")
@@ -122,22 +115,5 @@ class MainActivity : ComponentActivity() {
     private fun disableNfcForegroundDispatch() {
         nfcAdapter?.disableForegroundDispatch(this)
     }
-/*
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
 
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
-            intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)?.also { rawMessages ->
-                val messages: List<NdefMessage> = rawMessages.map { it as NdefMessage }
-                // Process the messages array.
-                parserNDEFMessage(messages)
-            }
-        }
-    }
-
-    private fun parserNDEFMessage(messages: List<NdefMessage>) {
-        val builder = StringBuilder()
-        println(messages.toString())
-    }
-*/
 }
