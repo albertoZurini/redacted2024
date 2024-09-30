@@ -103,12 +103,12 @@ class MainActivity : ComponentActivity() {
             try {
                 isoDep.connect();
                 var result = isoDep.transceive(selectApdu(SelectAID))
-                if (!(result[0] == 0x90.toByte() && result[1] == 0x00.toByte())){
-                    Log.wtf(TAG,"Error while selecting APDU")
+                if (!(result[0] == 0x6A.toByte() && result[1] == 0x82.toByte())){
+                    Log.wtf(TAG,"Error while authenticating with the app!")
                 }
 
                 result = isoDep.transceive(readBinaryAPDU())
-                if (!(result[0] == 0x90.toByte() && result[1] == 0x00.toByte())){
+                if (!(result[result.size - 2] == 0x90.toByte() && result[result.size - 1] == 0x00.toByte())){
                     Log.wtf(TAG,"Error while readming memory")
                 }
                 val output = NDEFTools.ExtractTextFromNDEF(result)

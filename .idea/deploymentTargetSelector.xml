@@ -18,7 +18,7 @@
       </SelectionState>
       <SelectionState runConfigName="hce_app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-09-28T18:02:50.636002323Z">
+        <DropdownSelection timestamp="2024-09-30T15:11:15.235176119Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=6e292c83" />
