@@ -109,7 +109,6 @@ class MainActivity : ComponentActivity() {
                 }
                 val output = NDEFTools.ExtractTextFromNDEF(result)
                 Log.i(TAG, "Output: "+output)
-                Toast.makeText(this, output, Toast.LENGTH_SHORT).show() // TODO: remove this
 
                 // Now create the button with the hypterlink
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(output))

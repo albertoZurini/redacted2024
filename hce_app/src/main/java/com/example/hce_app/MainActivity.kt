@@ -64,6 +64,7 @@ class MainActivity : ComponentActivity() {
                         Text("Set the message")
                     }
                 }
+                // TODO: Shazam should add here the GUI information for when the transaction has been made as well as for WalletConnect
             }
         }
     }
@@ -98,6 +99,8 @@ class MainActivity : ComponentActivity() {
             intent.putExtra("ndefMessage", urlToCast)
             startService(intent)
         }
+
+        // TODO: Shazam after this point should check on BlockScout for the transaction to be made or add an event listener
     }
 
     override fun onResume() {
