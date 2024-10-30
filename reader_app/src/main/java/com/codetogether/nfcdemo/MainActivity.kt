@@ -11,11 +11,17 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import com.codetogether.nfcdemo.parser.NDEFTools
 import java.io.IOException
 
@@ -34,14 +40,36 @@ class MainActivity : ComponentActivity() {
         if (nfcAdapter == null) {
             setContent {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    Text(text = "Can't get NFCAdapter")
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "NFC ERROR! Adapter unavailable",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            fontSize = 56.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
                 }
             }
-        }
-
-        setContent {
-            Surface(modifier = Modifier.fillMaxSize()) {
-                Text("Hello")
+        } else {
+            setContent {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "CryptoPOS\nreceiver",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            fontSize = 56.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+                }
             }
         }
     }
