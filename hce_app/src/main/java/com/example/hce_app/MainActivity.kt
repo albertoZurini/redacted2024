@@ -3,39 +3,31 @@ package com.example.hce_app
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
-import android.nfc.Tag
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.View
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.hce_app.cardEmulation.KHostApduService
-import com.example.hce_app.ui.theme.NFCDemoTheme
 
 class MainActivity : ComponentActivity() {
     private var nfcAdapter: NfcAdapter? = null
 
     private var nfcMessage: String by mutableStateOf("Hello")
 
-    private var messageToCast: String by mutableStateOf("")
+    private var address: String by mutableStateOf("0x97324859b73833dC6ACAFd216B1DB57EfDac9Fb7")
+    private var amount: String by mutableStateOf("1000000000")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,9 +47,14 @@ class MainActivity : ComponentActivity() {
                 Column {
                     Text(nfcMessage)
                     TextField(
-                        value = messageToCast,
-                        onValueChange = { messageToCast = it },
-                        label = { Text("Label") }
+                        value = address,
+                        onValueChange = { address = it },
+                        label = { Text("Address where to receive the payment") }
+                    )
+                    TextField(
+                        value = amount,
+                        onValueChange = { amount = it },
+                        label = { Text("Amount to be paid") }
                     )
                     Button(
                         onClick={
@@ -83,15 +80,22 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun setNFCMessage() {
-        if (TextUtils.isEmpty(messageToCast)) {
+        // Combine all the data into a metamask url
+        val urlToCast = "https://metamask.app.link/send/$address?value=$amount";
+        if (TextUtils.isEmpty(urlToCast)) {
             Toast.makeText(
                 this,
                 "The message has not to be empty",
                 Toast.LENGTH_LONG,
             ).show()
         } else {
+            Toast.makeText(
+                this,
+                urlToCast,
+                Toast.LENGTH_LONG,
+            ).show()
             val intent = Intent(this, KHostApduService::class.java)
-            intent.putExtra("ndefMessage", messageToCast)
+            intent.putExtra("ndefMessage", urlToCast)
             startService(intent)
         }
     }

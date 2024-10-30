@@ -2,12 +2,10 @@ package com.codetogether.nfcdemo
 
 import android.app.PendingIntent
 import android.content.Intent
-import android.nfc.NdefMessage
-import android.nfc.NdefRecord
+import android.net.Uri
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
-import android.nfc.tech.Ndef
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -16,13 +14,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import com.codetogether.nfcdemo.parser.NDEFTools
-import com.qifan.readnfcmessage.parser.NdefMessageParser
 import java.io.IOException
+
 
 class MainActivity : ComponentActivity() {
     private val TAG = "ReaderMainActivity"
@@ -113,7 +109,12 @@ class MainActivity : ComponentActivity() {
                 }
                 val output = NDEFTools.ExtractTextFromNDEF(result)
                 Log.i(TAG, "Output: "+output)
-                Toast.makeText(this, output, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, output, Toast.LENGTH_SHORT).show() // TODO: remove this
+
+                // Now create the button with the hypterlink
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(output))
+                startActivity(browserIntent)
+
             } catch ( ex: IOException) {
                 println("Exception " + ex)
             } finally {
