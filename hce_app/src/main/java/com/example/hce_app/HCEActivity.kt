@@ -28,6 +28,7 @@ class HCEActivity : ComponentActivity() {
 
     private var address: String by mutableStateOf("0x97324859b73833dC6ACAFd216B1DB57EfDac9Fb7")
     private var amount: String by mutableStateOf("1000000000")
+    private var chainID: String by mutableStateOf("0x18e")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +57,11 @@ class HCEActivity : ComponentActivity() {
                         onValueChange = { amount = it },
                         label = { Text("Amount to be paid") }
                     )
+                    TextField(
+                        value = chainID,
+                        onValueChange = { chainID = it },
+                        label = { Text("chainID") }
+                    )
                     Button(
                         onClick={
                             setNFCMessage()
@@ -82,7 +88,7 @@ class HCEActivity : ComponentActivity() {
 
     private fun setNFCMessage() {
         // Combine all the data into a metamask url
-        val urlToCast = "https://metamask.app.link/send/$address?value=$amount";
+        val urlToCast = "https://metamask.app.link/send/$address@$chainID?value=$amount";
         if (TextUtils.isEmpty(urlToCast)) {
             Toast.makeText(
                 this,
