@@ -27,6 +27,8 @@
             </intent-filter>
 
         </activity>
+        <activity android:name=".NFCReaderActivity" />
+        <activity android:name=".HCEActivity" />
         <service android:name=".cardEmulation.KHostApduService"
             android:exported="true"
             android:enabled="true"
