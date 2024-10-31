@@ -1,0 +1,7 @@
+{
+    "extends": "near-sdk-as/asconfig.json",
+    "entries": {
+      "main": "assembly/index.ts"
+    }
+  }
+  
