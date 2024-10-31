@@ -105,42 +105,56 @@ contract PointOfSale {
         emit OrderReceived(msg.sender, amount, nonce, true, tokenAddress);
     }
 
-    // Batch withdrawal function for Ether and ERC20 orders
-    function batchWithdraw(uint256[] calldata orderIds) external onlyOwner {
-        uint256 etherWithdrawable = 0;
-        mapping(address => uint256) tokenWithdrawable;
+function batchWithdraw(uint256[] calldata orderIds) external onlyOwner {
+    uint256 etherWithdrawable = 0;
 
-        for (uint256 i = 0; i < orderIds.length; i++) {
-            uint256 id = orderIds[i];
-            Order storage order = orders[id];
-            require(!order.refunded, "Order already processed");
-            require(block.timestamp >= order.timestamp + 1 weeks, "Order not yet available for withdrawal");
+    // Define an array to track token amounts and addresses for ERC20 tokens
+    address[] memory tokenAddresses = new address[](orderIds.length);
+    uint256[] memory tokenAmounts = new uint256[](orderIds.length);
+    uint256 tokenCount = 0;
 
-            if (order.isERC20) {
-                tokenWithdrawable[order.tokenAddress] += order.amount;
-            } else {
-                etherWithdrawable += order.amount;
+    for (uint256 i = 0; i < orderIds.length; i++) {
+        uint256 id = orderIds[i];
+        Order storage order = orders[id];
+        
+        require(!order.refunded, "Order already processed");
+        require(block.timestamp >= order.timestamp + 1 weeks, "Order not yet available for withdrawal");
+
+        if (order.isERC20) {
+            bool found = false;
+            for (uint256 j = 0; j < tokenCount; j++) {
+                if (tokenAddresses[j] == order.tokenAddress) {
+                    tokenAmounts[j] += order.amount;
+                    found = true;
+                    break;
+                }
             }
-            
-            order.refunded = true;
-        }
-
-        // Withdraw Ether
-        if (etherWithdrawable > 0) {
-            payable(owner).transfer(etherWithdrawable);
-            emit Withdrawal(owner, etherWithdrawable, address(0));
-        }
-
-        // Withdraw ERC20 tokens
-        for (uint256 i = 0; i < orderIds.length; i++) {
-            Order memory order = orders[orderIds[i]];
-            if (order.isERC20 && tokenWithdrawable[order.tokenAddress] > 0) {
-                IERC20(order.tokenAddress).transfer(owner, tokenWithdrawable[order.tokenAddress]);
-                emit Withdrawal(owner, tokenWithdrawable[order.tokenAddress], order.tokenAddress);
-                tokenWithdrawable[order.tokenAddress] = 0;
+            if (!found) {
+                tokenAddresses[tokenCount] = order.tokenAddress;
+                tokenAmounts[tokenCount] = order.amount;
+                tokenCount++;
             }
+        } else {
+            etherWithdrawable += order.amount;
+        }
+        
+        order.refunded = true;
+    }
+
+    // Withdraw Ether
+    if (etherWithdrawable > 0) {
+        payable(owner).transfer(etherWithdrawable);
+        emit Withdrawal(owner, etherWithdrawable, address(0));
+    }
+
+    // Withdraw ERC20 tokens
+    for (uint256 i = 0; i < tokenCount; i++) {
+        if (tokenAmounts[i] > 0) {
+            IERC20(tokenAddresses[i]).transfer(owner, tokenAmounts[i]);
+            emit Withdrawal(owner, tokenAmounts[i], tokenAddresses[i]);
         }
     }
+}
 
     // Batch return function for Ether and ERC20 orders with specified percentages
     function batchReturn(uint256[] calldata orderIds, uint256[] calldata percentages) external onlyOwner {
