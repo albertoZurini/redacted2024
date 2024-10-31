@@ -72,6 +72,20 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        /*
+        Test code
+        val address = "0x97324859b73833dC6ACAFd216B1DB57EfDac9Fb7"
+        val amount = "1e6"
+        val chainID = "0x18e"
+        processGottenURL("https://metamask.app.link/send/$address@$chainID?value=$amount")
+        */
+    }
+
+    private fun processGottenURL(url: String){
+        // Now create the button with the hyperlink
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(browserIntent)
     }
 
     override fun onResume() {
@@ -138,9 +152,7 @@ class MainActivity : ComponentActivity() {
                 val output = NDEFTools.ExtractTextFromNDEF(result)
                 Log.i(TAG, "Output: "+output)
 
-                // Now create the button with the hypterlink
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(output))
-                startActivity(browserIntent)
+                processGottenURL(output)
 
             } catch ( ex: IOException) {
                 println("Exception " + ex)
